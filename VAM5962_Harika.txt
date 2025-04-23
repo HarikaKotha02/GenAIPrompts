@@ -1,0 +1,846 @@
+->Generate unit test case using VSTest for testing following conditions for all fields of Policy class listed here - Email should be valid 
+  expression, Account Number is 8 digit number & cannot be empty, Policy Number is 8 digit number, First Name is 50 character n on-empty 
+  string, Last Name is 50 character non-empty string, Postal Code is 7 digit number, Phone is valid phone number format, Producer Code is 
+  5 character not empty string, Group Code is 5 character not empty string, Master Code is 5 character not empty string, City is 20 character 
+  non-empty string, State is 20 character non-empty string, Effective Date is valid date format less than or equal to current date, Expiration 
+  Date is valid date format greater than or equal to current date, Annual Premium decimal type with 2 decimal places non zero v alue
+
+
+To test the specified conditions for the `Policy` class using VSTest, you can create a unit test class in C# with the `MSTest` framework. Below is an example of how you can write unit tests for the specified validation rules.
+
+### Explanation:
+1. Each test method validates a specific field of the `Policy` class.
+2. The `Assert` statements ensure that the validation logic is working as expected.
+3. Mock data is used to test both valid and invalid cases.
+
+### Code Example:
+```csharp
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Text.RegularExpressions;
+
+namespace PolicyTests
+{
+    [TestClass]
+    public class PolicyValidationTests
+    {
+        [TestMethod]
+        public void TestValidEmail()
+        {
+            string email = "test@example.com";
+            string invalidEmail = "invalid-email";
+
+            Assert.IsTrue(IsValidEmail(email));
+            Assert.IsFalse(IsValidEmail(invalidEmail));
+        }
+
+        [TestMethod]
+        public void TestAccountNumber()
+        {
+            string validAccountNumber = "12345678";
+            string invalidAccountNumber = "12345";
+
+            Assert.IsTrue(IsValidAccountNumber(validAccountNumber));
+            Assert.IsFalse(IsValidAccountNumber(invalidAccountNumber));
+        }
+
+        [TestMethod]
+        public void TestPolicyNumber()
+        {
+            string validPolicyNumber = "87654321";
+            string invalidPolicyNumber = "123";
+
+            Assert.IsTrue(IsValidPolicyNumber(validPolicyNumber));
+            Assert.IsFalse(IsValidPolicyNumber(invalidPolicyNumber));
+        }
+
+        [TestMethod]
+        public void TestFirstName()
+        {
+            string validFirstName = "John";
+            string invalidFirstName = "";
+
+            Assert.IsTrue(IsValidName(validFirstName, 50));
+            Assert.IsFalse(IsValidName(invalidFirstName, 50));
+        }
+
+        [TestMethod]
+        public void TestLastName()
+        {
+            string validLastName = "Doe";
+            string invalidLastName = "";
+
+            Assert.IsTrue(IsValidName(validLastName, 50));
+            Assert.IsFalse(IsValidName(invalidLastName, 50));
+        }
+
+        [TestMethod]
+        public void TestPostalCode()
+        {
+            string validPostalCode = "1234567";
+            string invalidPostalCode = "1234";
+
+            Assert.IsTrue(IsValidPostalCode(validPostalCode));
+            Assert.IsFalse(IsValidPostalCode(invalidPostalCode));
+        }
+
+        [TestMethod]
+        public void TestPhoneNumber()
+        {
+            string validPhone = "+1-123-456-7890";
+            string invalidPhone = "12345";
+
+            Assert.IsTrue(IsValidPhoneNumber(validPhone));
+            Assert.IsFalse(IsValidPhoneNumber(invalidPhone));
+        }
+
+        [TestMethod]
+        public void TestProducerCode()
+        {
+            string validProducerCode = "ABCDE";
+            string invalidProducerCode = "";
+
+            Assert.IsTrue(IsValidCode(validProducerCode, 5));
+            Assert.IsFalse(IsValidCode(invalidProducerCode, 5));
+        }
+
+        [TestMethod]
+        public void TestEffectiveDate()
+        {
+            DateTime validDate = DateTime.Now.AddDays(-1);
+            DateTime invalidDate = DateTime.Now.AddDays(1);
+
+            Assert.IsTrue(IsValidEffectiveDate(validDate));
+            Assert.IsFalse(IsValidEffectiveDate(invalidDate));
+        }
+
+        [TestMethod]
+        public void TestExpirationDate()
+        {
+            DateTime validDate = DateTime.Now.AddDays(1);
+            DateTime invalidDate = DateTime.Now.AddDays(-1);
+
+            Assert.IsTrue(IsValidExpirationDate(validDate));
+            Assert.IsFalse(IsValidExpirationDate(invalidDate));
+        }
+
+        [TestMethod]
+        public void TestAnnualPremium()
+        {
+            decimal validPremium = 100.50m;
+            decimal invalidPremium = 0.00m;
+
+            Assert.IsTrue(IsValidAnnualPremium(validPremium));
+            Assert.IsFalse(IsValidAnnualPremium(invalidPremium));
+        }
+
+        // Helper Methods
+        private bool IsValidEmail(string email)
+        {
+            var emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, emailRegex);
+        }
+
+        private bool IsValidAccountNumber(string accountNumber)
+        {
+            return accountNumber.Length == 8 && int.TryParse(accountNumber, out _);
+        }
+
+        private bool IsValidPolicyNumber(string policyNumber)
+        {
+            return policyNumber.Length == 8 && int.TryParse(policyNumber, out _);
+        }
+
+        private bool IsValidName(string name, int maxLength)
+        {
+            return !string.IsNullOrEmpty(name) && name.Length <= maxLength;
+        }
+
+        private bool IsValidPostalCode(string postalCode)
+        {
+            return postalCode.Length == 7 && int.TryParse(postalCode, out _);
+        }
+
+        private bool IsValidPhoneNumber(string phone)
+        {
+            var phoneRegex = @"^\+?[1-9]\d{1,14}$";
+            return Regex.IsMatch(phone, phoneRegex);
+        }
+
+        private bool IsValidCode(string code, int length)
+        {
+            return !string.IsNullOrEmpty(code) && code.Length == length;
+        }
+
+        private bool IsValidEffectiveDate(DateTime date)
+        {
+            return date <= DateTime.Now;
+        }
+
+        private bool IsValidExpirationDate(DateTime date)
+        {
+            return date >= DateTime.Now;
+        }
+
+        private bool IsValidAnnualPremium(decimal premium)
+        {
+            return premium > 0 && decimal.Round(premium, 2) == premium;
+        }
+    }
+}
+```
+
+### Key Points:
+- Each test method validates a specific field.
+- Helper methods encapsulate the validation logic for reusability.
+- Use `Assert.IsTrue` and `Assert.IsFalse` to verify the expected outcomes.
+
+
+
+
+
+
+->promt 2: Can you help me add more validation rules for the Policy class?
+Certainly! Below is an example of how you can add additional validation rules for the `Policy` class. These rules can be implemented in a utility class or directly in the `Policy` class, depending on your design. Here's an example of a utility class for validation:
+
+```java
+package com.vm.policy;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.regex.Pattern;
+
+public class PolicyValidator {
+
+    public static boolean isValidEmail(String email) {
+        String emailRegex = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$";
+        return email != null && Pattern.matches(emailRegex, email);
+    }
+
+    public static boolean isValidAccountNumber(String accountNumber) {
+        return accountNumber != null && accountNumber.matches("\\d{8}");
+    }
+
+    public static boolean isValidPolicyNumber(String policyNumber) {
+        return policyNumber != null && policyNumber.matches("\\d{8}");
+    }
+
+    public static boolean isValidName(String name, int maxLength) {
+        return name != null && !name.isEmpty() && name.length() <= maxLength;
+    }
+
+    public static boolean isValidPostalCode(String postalCode) {
+        return postalCode != null && postalCode.matches("\\d{7}");
+    }
+
+    public static boolean isValidPhoneNumber(String phone) {
+        String phoneRegex = "^\\+?[1-9]\\d{1,14}$";
+        return phone != null && Pattern.matches(phoneRegex, phone);
+    }
+
+    public static boolean isValidCode(String code, int length) {
+        return code != null && !code.isEmpty() && code.length() == length;
+    }
+
+    public static boolean isValidEffectiveDate(LocalDate effectiveDate) {
+        return effectiveDate != null && !effectiveDate.isAfter(LocalDate.now());
+    }
+
+    public static boolean isValidExpirationDate(LocalDate expirationDate) {
+        return expirationDate != null && !expirationDate.isBefore(LocalDate.now());
+    }
+
+    public static boolean isValidAnnualPremium(BigDecimal annualPremium) {
+        return annualPremium != null && annualPremium.compareTo(BigDecimal.ZERO) > 0 && annualPremium.scale() <= 2;
+    }
+}
+```
+
+### Explanation:
+1. **Email Validation**: Ensures the email follows a valid format.
+2. **Account/Policy Number**: Must be an 8-digit number.
+3. **Name Validation**: Ensures the name is non-empty and within the specified length.
+4. **Postal Code**: Must be a 7-digit number.
+5. **Phone Number**: Validates against an international phone number format.
+6. **Code Validation**: Ensures the code is non-empty and of the specified length.
+7. **Effective/Expiration Dates**: Validates that the effective date is not in the future and the expiration date is not in the past.
+8. **Annual Premium**: Ensures the value is greater than zero and has up to two decimal places.
+
+You can now use this utility class to validate `Policy` objects in your service or controller layers. Let me know if you need further assistance!
+
+
+
+
+->promt 3:Refactor PolicyTest class to move policy validation code for all fields into new PolicyValidator class
+To refactor the `PolicyTest` class, we will move the validation logic for all fields into the `PolicyValidator` class. This will make the code more modular and reusable. Below is the refactored code:
+
+### `PolicyValidator` Class
+This class will encapsulate all the validation logic.
+
+```java
+package com.vm.policy;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.regex.Pattern;
+
+public class PolicyValidator {
+
+    public static boolean isValidEmail(String email) {
+        String emailRegex = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$";
+        return email != null && Pattern.matches(emailRegex, email);
+    }
+
+    public static boolean isValidAccountNumber(String accountNumber) {
+        return accountNumber != null && accountNumber.matches("\\d{8}");
+    }
+
+    public static boolean isValidPolicyNumber(String policyNumber) {
+        return policyNumber != null && policyNumber.matches("\\d{8}");
+    }
+
+    public static boolean isValidName(String name, int maxLength) {
+        return name != null && !name.isEmpty() && name.length() <= maxLength;
+    }
+
+    public static boolean isValidPostalCode(String postalCode) {
+        return postalCode != null && postalCode.matches("\\d{7}");
+    }
+
+    public static boolean isValidPhoneNumber(String phone) {
+        String phoneRegex = "^\\+?[1-9]\\d{1,14}$";
+        return phone != null && Pattern.matches(phoneRegex, phone);
+    }
+
+    public static boolean isValidCode(String code, int length) {
+        return code != null && !code.isEmpty() && code.length() == length;
+    }
+
+    public static boolean isValidEffectiveDate(LocalDate effectiveDate) {
+        return effectiveDate != null && !effectiveDate.isAfter(LocalDate.now());
+    }
+
+    public static boolean isValidExpirationDate(LocalDate expirationDate) {
+        return expirationDate != null && !expirationDate.isBefore(LocalDate.now());
+    }
+
+    public static boolean isValidAnnualPremium(BigDecimal annualPremium) {
+        return annualPremium != null && annualPremium.compareTo(BigDecimal.ZERO) > 0 && annualPremium.scale() <= 2;
+    }
+}
+```
+
+### Refactored `PolicyTest` Class
+The `PolicyTest` class will now use the `PolicyValidator` class for validation.
+
+```java
+package com.vm.policy;
+
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PolicyTest {
+
+    @Test
+    public void testValidEmail() {
+        assertTrue(PolicyValidator.isValidEmail("test@example.com"));
+        assertFalse(PolicyValidator.isValidEmail("invalid-email"));
+    }
+
+    @Test
+    public void testAccountNumber() {
+        assertTrue(PolicyValidator.isValidAccountNumber("12345678"));
+        assertFalse(PolicyValidator.isValidAccountNumber("12345"));
+    }
+
+    @Test
+    public void testPolicyNumber() {
+        assertTrue(PolicyValidator.isValidPolicyNumber("87654321"));
+        assertFalse(PolicyValidator.isValidPolicyNumber("123"));
+    }
+
+    @Test
+    public void testFirstName() {
+        assertTrue(PolicyValidator.isValidName("John", 50));
+        assertFalse(PolicyValidator.isValidName("", 50));
+    }
+
+    @Test
+    public void testLastName() {
+        assertTrue(PolicyValidator.isValidName("Doe", 50));
+        assertFalse(PolicyValidator.isValidName("", 50));
+    }
+
+    @Test
+    public void testPostalCode() {
+        assertTrue(PolicyValidator.isValidPostalCode("1234567"));
+        assertFalse(PolicyValidator.isValidPostalCode("1234"));
+    }
+
+    @Test
+    public void testPhoneNumber() {
+        assertTrue(PolicyValidator.isValidPhoneNumber("+1-123-456-7890"));
+        assertFalse(PolicyValidator.isValidPhoneNumber("12345"));
+    }
+
+    @Test
+    public void testProducerCode() {
+        assertTrue(PolicyValidator.isValidCode("ABCDE", 5));
+        assertFalse(PolicyValidator.isValidCode("", 5));
+    }
+
+    @Test
+    public void testEffectiveDate() {
+        assertTrue(PolicyValidator.isValidEffectiveDate(LocalDate.now().minusDays(1)));
+        assertFalse(PolicyValidator.isValidEffectiveDate(LocalDate.now().plusDays(1)));
+    }
+
+    @Test
+    public void testExpirationDate() {
+        assertTrue(PolicyValidator.isValidExpirationDate(LocalDate.now().plusDays(1)));
+        assertFalse(PolicyValidator.isValidExpirationDate(LocalDate.now().minusDays(1)));
+    }
+
+    @Test
+    public void testAnnualPremium() {
+        assertTrue(PolicyValidator.isValidAnnualPremium(new BigDecimal("100.50")));
+        assertFalse(PolicyValidator.isValidAnnualPremium(new BigDecimal("0.00")));
+    }
+}
+```
+
+### Summary
+- The `PolicyValidator` class now contains all the validation logic.
+- The `PolicyTest` class uses the `PolicyValidator` class to test the validation rules.
+- This refactoring improves code reusability and separation of concerns.
+
+
+
+
+
+->promt 4: /tests
+```java
+package com.vm.policy;
+
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ValidationClassForTest {
+
+    @Test
+    public void emailShouldBeValidWhenFormatIsCorrect() {
+        assertTrue(PolicyValidator.isValidEmail("valid.email@example.com"));
+    }
+
+    @Test
+    public void emailShouldBeInvalidWhenFormatIsIncorrect() {
+        assertFalse(PolicyValidator.isValidEmail("invalid-email"));
+    }
+
+    @Test
+    public void accountNumberShouldBeValidWhenItIsEightDigits() {
+        assertTrue(PolicyValidator.isValidAccountNumber("12345678"));
+    }
+
+    @Test
+    public void accountNumberShouldBeInvalidWhenItIsNotEightDigits() {
+        assertFalse(PolicyValidator.isValidAccountNumber("1234"));
+    }
+
+    @Test
+    public void policyNumberShouldBeValidWhenItIsEightDigits() {
+        assertTrue(PolicyValidator.isValidPolicyNumber("87654321"));
+    }
+
+    @Test
+    public void policyNumberShouldBeInvalidWhenItIsNotEightDigits() {
+        assertFalse(PolicyValidator.isValidPolicyNumber("123"));
+    }
+
+    @Test
+    public void nameShouldBeValidWhenNonEmptyAndWithinMaxLength() {
+        assertTrue(PolicyValidator.isValidName("John Doe", 50));
+    }
+
+    @Test
+    public void nameShouldBeInvalidWhenEmpty() {
+        assertFalse(PolicyValidator.isValidName("", 50));
+    }
+
+    @Test
+    public void nameShouldBeInvalidWhenExceedingMaxLength() {
+        assertFalse(PolicyValidator.isValidName("A".repeat(51), 50));
+    }
+
+    @Test
+    public void postalCodeShouldBeValidWhenItIsSevenDigits() {
+        assertTrue(PolicyValidator.isValidPostalCode("1234567"));
+    }
+
+    @Test
+    public void postalCodeShouldBeInvalidWhenItIsNotSevenDigits() {
+        assertFalse(PolicyValidator.isValidPostalCode("1234"));
+    }
+
+    @Test
+    public void phoneNumberShouldBeValidWhenFormatIsCorrect() {
+        assertTrue(PolicyValidator.isValidPhoneNumber("+1234567890"));
+    }
+
+    @Test
+    public void phoneNumberShouldBeInvalidWhenFormatIsIncorrect() {
+        assertFalse(PolicyValidator.isValidPhoneNumber("12345"));
+    }
+
+    @Test
+    public void codeShouldBeValidWhenNonEmptyAndCorrectLength() {
+        assertTrue(PolicyValidator.isValidCode("ABCDE", 5));
+    }
+
+    @Test
+    public void codeShouldBeInvalidWhenEmpty() {
+        assertFalse(PolicyValidator.isValidCode("", 5));
+    }
+
+    @Test
+    public void codeShouldBeInvalidWhenIncorrectLength() {
+        assertFalse(PolicyValidator.isValidCode("ABC", 5));
+    }
+
+    @Test
+    public void effectiveDateShouldBeValidWhenNotInFuture() {
+        assertTrue(PolicyValidator.isValidEffectiveDate(LocalDate.now().minusDays(1)));
+    }
+
+    @Test
+    public void effectiveDateShouldBeInvalidWhenInFuture() {
+        assertFalse(PolicyValidator.isValidEffectiveDate(LocalDate.now().plusDays(1)));
+    }
+
+    @Test
+    public void expirationDateShouldBeValidWhenNotInPast() {
+        assertTrue(PolicyValidator.isValidExpirationDate(LocalDate.now().plusDays(1)));
+    }
+
+    @Test
+    public void expirationDateShouldBeInvalidWhenInPast() {
+        assertFalse(PolicyValidator.isValidExpirationDate(LocalDate.now().minusDays(1)));
+    }
+
+    @Test
+    public void annualPremiumShouldBeValidWhenGreaterThanZeroAndTwoDecimalPlaces() {
+        assertTrue(PolicyValidator.isValidAnnualPremium(new BigDecimal("100.50")));
+    }
+
+    @Test
+    public void annualPremiumShouldBeInvalidWhenZero() {
+        assertFalse(PolicyValidator.isValidAnnualPremium(new BigDecimal("0.00")));
+    }
+
+    @Test
+    public void annualPremiumShouldBeInvalidWhenMoreThanTwoDecimalPlaces() {
+        assertFalse(PolicyValidator.isValidAnnualPremium(new BigDecimal("100.123")));
+    }
+}
+
+
+
+->promt 5:Update code for defect fix - Invalid HomeInsurancePolicy object parameter in PolicyController method.
+To fix the defect related to an invalid `HomeInsurancePolicy` object parameter in the `PolicyController` method, you can add validation logic to ensure the object is valid before proceeding. Below is the updated `PolicyController` method:
+
+```java
+@PutMapping("/{id}")
+public ResponseEntity<String> updatePolicy(@PathVariable Long id, @RequestBody HomeInsurancePolicy policy) {
+    if (policy == null || !isValidHomeInsurancePolicy(policy)) {
+        return ResponseEntity.badRequest().body("Invalid HomeInsurancePolicy object");
+    }
+
+    boolean isUpdated = policyService.updatePolicy(id, policy);
+    if (!isUpdated) {
+        return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok("Policy updated successfully");
+}
+
+private boolean isValidHomeInsurancePolicy(HomeInsurancePolicy policy) {
+    return policy.getPolicyNumber() != null && !policy.getPolicyNumber().isEmpty()
+            && policy.getEffectiveDate() != null
+            && policy.getExpirationDate() != null
+            && policy.getExpirationDate().isAfter(policy.getEffectiveDate())
+            && policy.getAnnualPremium() != null && policy.getAnnualPremium().compareTo(BigDecimal.ZERO) > 0;
+}
+``` 
+
+### Changes:
+1. **Validation Check**: Added `isValidHomeInsurancePolicy` to validate the `HomeInsurancePolicy` object.
+2. **Bad Request Handling**: Returns a `400 Bad Request` response if the object is invalid.
+3. **Update Logic**: Proceeds with the update only if the object is valid.
+
+
+->promt 6: #editor Generate mappings using Automapper
+To generate mappings using AutoMapper in a Spring Boot project, you need to configure a mapping profile. Below is an example of how to set up and use AutoMapper for mapping between DTOs and entities.
+
+### Step 1: Add AutoMapper Dependency
+Add the AutoMapper dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.modelmapper</groupId>
+    <artifactId>modelmapper</artifactId>
+    <version>3.1.1</version>
+</dependency>
+```
+
+### Step 2: Create a Mapping Configuration
+Create a configuration class to define the mappings.
+
+```java
+package com.vm.policy.config;
+
+import com.vm.policy.dto.PolicyDTO;
+import com.vm.policy.model.Policy;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AutoMapperConfig {
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.typeMap(Policy.class, PolicyDTO.class).addMappings(mapper -> {
+            mapper.map(Policy::getPolicyNumber, PolicyDTO::setPolicyNumber);
+            mapper.map(Policy::getEffectiveDate, PolicyDTO::setEffectiveDate);
+            mapper.map(Policy::getExpirationDate, PolicyDTO::setExpirationDate);
+            mapper.map(Policy::getAnnualPremium, PolicyDTO::setAnnualPremium);
+        });
+        return modelMapper;
+    }
+}
+```
+
+### Step 3: Create DTO Classes
+Define DTO classes for the entities you want to map.
+
+```java
+package com.vm.policy.dto;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public class PolicyDTO {
+    private String policyNumber;
+    private LocalDate effectiveDate;
+    private LocalDate expirationDate;
+    private BigDecimal annualPremium;
+
+    // Getters and Setters
+    public String getPolicyNumber() {
+        return policyNumber;
+    }
+
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
+    }
+
+    public LocalDate getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(LocalDate effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public BigDecimal getAnnualPremium() {
+        return annualPremium;
+    }
+
+    public void setAnnualPremium(BigDecimal annualPremium) {
+        this.annualPremium = annualPremium;
+    }
+}
+```
+
+### Step 4: Use AutoMapper in Your Service or Controller
+Inject the `ModelMapper` bean and use it to map between entities and DTOs.
+
+```java
+package com.vm.policy.controller;
+
+import com.vm.policy.dto.PolicyDTO;
+import com.vm.policy.model.Policy;
+import com.vm.policy.service.PolicyService;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/policies")
+public class PolicyController {
+
+    private final PolicyService policyService;
+    private final ModelMapper modelMapper;
+
+    public PolicyController(PolicyService policyService, ModelMapper modelMapper) {
+        this.policyService = policyService;
+        this.modelMapper = modelMapper;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PolicyDTO>> getAllPolicies() {
+        List<Policy> policies = policyService.getAllPolicies();
+        List<PolicyDTO> policyDTOs = policies.stream()
+                .map(policy -> modelMapper.map(policy, PolicyDTO.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(policyDTOs);
+    }
+}
+```
+
+This setup allows you to map between entities and DTOs seamlessly using AutoMapper.
+
+->promt 7 : #editor Refactor CalculateTotalPremium method to resolve cyclomatic complexity issue
+
+To refactor the `CalculateTotalPremium` method and reduce its cyclomatic complexity, you can break down the logic into smaller, more manageable methods. Each method should handle a specific part of the calculation. Here's an example of how you can refactor it:
+
+### Refactored Code
+```java
+public class PremiumCalculator {
+
+    public BigDecimal calculateTotalPremium(Policy policy) {
+        if (policy == null) {
+            throw new IllegalArgumentException("Policy cannot be null");
+        }
+
+        BigDecimal basePremium = calculateBasePremium(policy);
+        BigDecimal riskFactor = calculateRiskFactor(policy);
+        BigDecimal discounts = calculateDiscounts(policy);
+
+        return basePremium.add(riskFactor).subtract(discounts);
+    }
+
+    private BigDecimal calculateBasePremium(Policy policy) {
+        // Logic to calculate the base premium
+        return policy.getBasePremium();
+    }
+
+    private BigDecimal calculateRiskFactor(Policy policy) {
+        // Logic to calculate risk factors based on policy details
+        if (policy.isHighRisk()) {
+            return policy.getBasePremium().multiply(new BigDecimal("0.2"));
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private BigDecimal calculateDiscounts(Policy policy) {
+        // Logic to calculate discounts based on policy details
+        BigDecimal discount = BigDecimal.ZERO;
+        if (policy.hasLoyaltyDiscount()) {
+            discount = discount.add(new BigDecimal("50"));
+        }
+        if (policy.hasNoClaimBonus()) {
+            discount = discount.add(new BigDecimal("30"));
+        }
+        return discount;
+    }
+}
+```
+
+### Explanation:
+1. **Separation of Concerns**: The logic is divided into three helper methods: `calculateBasePremium`, `calculateRiskFactor`, and `calculateDiscounts`.
+2. **Improved Readability**: Each method handles a specific part of the calculation, making the code easier to read and maintain.
+3. **Reduced Cyclomatic Complexity**: By delegating logic to helper methods, the main method (`calculateTotalPremium`) has fewer decision points.
+
+
+->promt 8: /explain
+
+The `PolicyController` class is a Spring Boot REST controller that provides endpoints for managing insurance policies. It is annotated with `@RestController` and `@RequestMapping("/api/policies")`, which designates it as a RESTful web service and maps all its endpoints under the `/api/policies` path.
+
+### Constructor and Dependency Injection
+The controller uses constructor-based dependency injection to initialize the `PolicyService` object:
+```java
+public PolicyController(PolicyService policyService) {
+    this.policyService = policyService;
+}
+```
+This ensures that the `PolicyService` is provided by the Spring container, enabling the controller to delegate business logic to the service layer.
+
+### Create Policy Endpoint
+The `@PostMapping("/create")` method allows clients to create a new policy by sending a `Policy` object in the request body. The method delegates the creation logic to the `PolicyService` and returns a `201 Created` response:
+```java
+@PostMapping("/create")
+public ResponseEntity<String> createPolicy(@RequestBody Policy policy) {
+    policyService.createPolicy(policy);
+    return ResponseEntity.status(201).body("Policy created successfully");
+}
+```
+
+### Get Policy by ID
+The `@GetMapping("/{id}")` method retrieves a policy by its ID. If the policy is not found, it returns a `404 Not Found` response; otherwise, it returns the policy object with a `200 OK` status:
+```java
+@GetMapping("/{id}")
+public ResponseEntity<Policy> getPolicyById(@PathVariable Long id) {
+    Policy policy = policyService.getPolicyById(id);
+    if (policy == null) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(policy);
+}
+```
+
+### Get All Policies
+The `@GetMapping` method fetches all policies. It calls the service layer to retrieve a list of policies and returns them with a `200 OK` response:
+```java
+@GetMapping
+public ResponseEntity<List<Policy>> getAllPolicies() {
+    List<Policy> policies = policyService.getAllPolicies();
+    return ResponseEntity.ok(policies);
+}
+```
+
+### Get Policies by User
+The `@GetMapping("/user/{userId}")` method retrieves all policies associated with a specific user. The `userId` is passed as a path variable, and the method returns the list of policies with a `200 OK` response:
+```java
+@GetMapping("/user/{userId}")
+public ResponseEntity<List<Policy>> getPoliciesByUser(@PathVariable Long userId) {
+    List<Policy> policies = policyService.getPoliciesByUser(userId);
+    return ResponseEntity.ok(policies);
+}
+```
+
+### Get Policy with Claims
+The `@GetMapping("/{policyId}/details")` method retrieves a policy along with its associated claims. If the policy is not found, it returns a `404 Not Found` response; otherwise, it returns the policy details:
+```java
+@GetMapping("/{policyId}/details")
+public ResponseEntity<Policy> getPolicyWithClaims(@PathVariable Long policyId) {
+    Policy policy = policyService.getPolicyWithClaims(policyId);
+    if (policy == null) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(policy);
+}
+```
+
+### Summary
+The `PolicyController` provides a clean and structured way to handle CRUD operations for policies. It delegates business logic to the `PolicyService`, ensuring separation of concerns. Each endpoint is designed to handle specific use cases, returning appropriate HTTP status codes and responses.
